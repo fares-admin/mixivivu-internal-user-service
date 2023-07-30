@@ -1,15 +1,16 @@
-import { InternalUser } from '@/src/repository/internal-user-repo/internal-user-entity'
-import { InternalUserRepository } from '@/src/repository/internal-user-repo/internal-user-repository'
 import { CommonListResult, CommonResponse, CommonService } from 'common-abstract-fares-system'
-import { NextApiRequest } from 'next'
 import { InternalUserReq, InternalUserReqError } from './internal-user-req'
-import { InternalUserRes } from './internal-user-res'
 import {
   addNewUserFunction,
   deleteUserFunction,
   getListUsersFunc,
   updateUserFunction,
 } from './internal-user-service-function'
+
+import { InternalUser } from '@/src/repository/internal-user-repo/internal-user-entity'
+import { InternalUserRepository } from '@/src/repository/internal-user-repo/internal-user-repository'
+import { InternalUserRes } from './internal-user-res'
+import { NextApiRequest } from 'next'
 
 export class InternalUserService extends CommonService<InternalUserRepository> {
   constructor() {
@@ -23,8 +24,7 @@ export class InternalUserService extends CommonService<InternalUserRepository> {
       req,
       this.repository,
       this.getPageAndSize,
-      this.generatePipelineAggregate(req.query, new InternalUser()),
-      this.responseList
+      this.generatePipelineAggregate(req.query, new InternalUser())
     )
   }
 
