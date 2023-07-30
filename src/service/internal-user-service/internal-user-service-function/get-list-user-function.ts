@@ -1,6 +1,6 @@
-import { InternalUser } from '@/src/repository/internal-user-repo/internal-user-entity'
+import { CommonListResult, CommonResponse } from 'common-abstract-fares-system'
+
 import { InternalUserRepository } from '@/src/repository/internal-user-repo/internal-user-repository'
-import { CommonListResult, CommonResponse, PipelineResponse } from 'common-abstract-fares-system'
 import mongoose from 'mongoose'
 import { NextApiRequest } from 'next'
 import { InternalUserRes } from '../internal-user-res'
@@ -23,14 +23,30 @@ export const getListUsersFunc = async (
     page: number
     size: number
   },
-  pipelines: mongoose.PipelineStage[],
-  responseList: (
-    result: PipelineResponse<CommonListResult<InternalUser>>,
-    res: InternalUserRes
-  ) => Promise<CommonResponse<CommonListResult<InternalUserRes> | string>>
+  pipelines: mongoose.PipelineStage[]
 ): Promise<CommonResponse<CommonListResult<InternalUserRes> | string>> => {
   const { page, size } = getPageAndSize(req as any)
   const result = await repository.find(page, size, pipelines)
-
-  return await responseList(result, new InternalUserRes())
+  if (!result.result) {
+    return {
+      status: 500,
+      message: 'sv err',
+      success: false,
+      result: '',
+    }
+  }
+  return {
+    status: 200,
+    message: 'ok',
+    success: true,
+    result: {
+      ...result.result,
+      data: result.result.data.map((item) => {
+        return {
+          ...item,
+          _id: item._id.toString(),
+        }
+      }),
+    },
+  }
 }
